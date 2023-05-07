@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Issues</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h2 id="page-heading">Page number 1</h2>
+  <button id="load_prev">Load Previous</button>
+  <button id="load_next">Load Next</button>
+  <ol id="issue-list"></ol>
+
+  <script>
+    let currentPage = 1;
+
+    function getIssues(page) {
+      const apiUrl = `https://api.github.com/repositories/1296269/issues?page=${page}&per_page=5`;
+
+      $.ajax({
+        url: apiUrl,
+        method: "GET",
+        success: function (response) {
+          const issueList = $("#issue-list");
+          issueList.empty();
+
+          response.forEach(function (issue) {
+            issueList.append(`<li>${issue.title}</li>`);
+          });
+        },
+        error: function (error) {
+          console.log(error);
+        },
+      });
+    }
+
+    function updatePageHeading() {
+      const pageHeading = $("#page-heading");
+      pageHeading.text(`Page number ${currentPage}`);
+    }
+
+    $("#load_next").click(function () {
+      currentPage++;
+      updatePageHeading();
+      getIssues(currentPage);
+    });
+
+    $("#load_prev").click(function () {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePageHeading();
+        getIssues(currentPage);
+      }
+    });
+
+    // Initial page load
+    getIssues(currentPage);
+  </script>
+</body>
+</html>
